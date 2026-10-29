@@ -45,12 +45,8 @@ npm start
 - Some download/API commands depend on the upstream provider and may require a valid API key.
 - This project retains the upstream source license and dependency attributions. See `LICENSE`.
 
-## Session generator web
-Starting the bot also starts a web page (port `PORT`, default 3000) where you enter your number, get a pairing code and receive a `SESSION_ID`.
-Set `SESSION_ID` as an environment variable on hosts with wiped disks (Render, Heroku); the bot restores `session/creds.json` from it on boot. Set `SESSION_WEB=false` to disable the page.
+## Session
+Get a SESSION_ID from the separate Paxton-Session generator, then set it as the `SESSION_ID` variable (or in `.env`). On boot the bot restores `session/creds.json` if none exists.
 
 ## Deploy on Render
-Push to a private GitHub repo, then New → Blueprint (uses `render.yaml`) or New → Web Service → Docker. Add env vars `API_KEY`, `DATABASE_URL`, `SESSION_ID`. Free web services sleep after inactivity; ping `/health` with an uptime monitor.
-
-### Generator-only mode
-Set `GEN_ONLY=true` to run only the session generator page (no bot). Use this for a separate Render service whose only job is creating session IDs.
+Push to a private GitHub repo, New > Web Service > Docker, health check path `/health`. Add env vars `API_KEY`, `DATABASE_URL`, `SESSION_ID`. Ping the URL with an uptime monitor on the free tier.

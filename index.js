@@ -7,7 +7,7 @@ import CFonts from 'cfonts'
 import { fileURLToPath } from 'url'
 import { Utils } from '@neoxr/wb'
 import { restoreSession } from './lib/session.js'
-import './server.js'
+import http from 'node:http'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -91,10 +91,10 @@ CFonts.say('WhatsApp Bot • Powered by Paxton', {
    align: 'center'
 })
 
-if (process.env.GEN_ONLY === 'true') {
-   console.log('[web] GEN_ONLY: running session generator only, bot not started')
-} else {
-   restoreSession()
-   start()
-   startAutoClean()
-}
+// tiny health endpoint so Render/Heroku web services stay healthy
+http.createServer((req, res) => { res.writeHead(200); res.end('Paxton-MD running') })
+   .listen(Number(process.env.PORT || 3000))
+
+restoreSession()
+start()
+startAutoClean()
