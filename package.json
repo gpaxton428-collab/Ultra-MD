@@ -44,6 +44,6 @@
    "devDependencies": {
       "css-select": "5.1.0",
       "fflate": "^0.8.2",
-      "pm2": "~7.0.3"
+      "pm2": "~7.1.1"
    }
 }
