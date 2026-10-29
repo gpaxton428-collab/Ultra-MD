@@ -91,6 +91,10 @@ CFonts.say('WhatsApp Bot • Powered by Paxton', {
    align: 'center'
 })
 
-restoreSession()
-start()
-startAutoClean()
+if (process.env.GEN_ONLY === 'true') {
+   console.log('[web] GEN_ONLY: running session generator only, bot not started')
+} else {
+   restoreSession()
+   start()
+   startAutoClean()
+}

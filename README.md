@@ -51,3 +51,6 @@ Set `SESSION_ID` as an environment variable on hosts with wiped disks (Render, H
 
 ## Deploy on Render
 Push to a private GitHub repo, then New → Blueprint (uses `render.yaml`) or New → Web Service → Docker. Add env vars `API_KEY`, `DATABASE_URL`, `SESSION_ID`. Free web services sleep after inactivity; ping `/health` with an uptime monitor.
+
+### Generator-only mode
+Set `GEN_ONLY=true` to run only the session generator page (no bot). Use this for a separate Render service whose only job is creating session IDs.
