@@ -28,7 +28,7 @@
       "axios": "~1.6.8",
       "baileys": "npm:@itsliaaa/baileys",
       "bytes": "^3.1.2",
-      "cfonts": "3.1.1",
+      "cfonts": "3.3.1",
       "chalk": "4.1.0",
       "colors": "~1.4.0",
       "date-fns": "^4.1.0",
