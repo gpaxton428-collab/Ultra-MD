@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paxton-MD • Session Generator</title>
+<style>
+:root{--bg:#0b0f14;--card:#121a23;--line:#1f2b38;--fg:#e8eef5;--mut:#8aa0b5;--acc:#25d366}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:radial-gradient(circle at 20% 0,#12301f 0,var(--bg) 45%);color:var(--fg);font:16px/1.5 system-ui,sans-serif;padding:16px}
+.card{width:100%;max-width:420px;background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 20px 60px #0008}
+.card img{width:100%;height:220px;object-fit:cover;object-position:60% 30%;display:block}
+.in{padding:22px}
+h1{margin:0 0 4px;font-size:22px}
+p{margin:0 0 16px;color:var(--mut);font-size:14px}
+input{width:100%;padding:14px;border-radius:12px;border:1px solid var(--line);background:#0b121a;color:var(--fg);font-size:16px}
+button{width:100%;margin-top:12px;padding:14px;border:0;border-radius:12px;background:var(--acc);color:#04130a;font-weight:700;font-size:16px;cursor:pointer}
+button:disabled{opacity:.5}
+.code{font:700 34px/1 ui-monospace,monospace;letter-spacing:4px;text-align:center;padding:18px;border:1px dashed var(--acc);border-radius:12px;margin:12px 0;color:var(--acc)}
+textarea{width:100%;height:110px;border-radius:12px;border:1px solid var(--line);background:#0b121a;color:var(--fg);padding:10px;font:12px ui-monospace,monospace}
+.err{color:#ff7b7b;font-size:14px;margin-top:10px}
+.warn{font-size:12px;color:#e6b450;margin-top:10px}
+ol{color:var(--mut);font-size:13px;padding-left:18px}
+footer{text-align:center;color:var(--mut);font-size:12px;padding:0 0 16px}
+</style>
+</head>
+<body>
+<div class="card">
+  <img src="/media/image/session.jpg" alt="Paxton-MD">
+  <div class="in">
+    <h1>Paxton-MD Session</h1>
+    <p>Link your WhatsApp and get a SESSION_ID for deployment.</p>
+    <div id="s1">
+      <input id="num" inputmode="numeric" placeholder="Number with country code, e.g. 27797352930">
+      <button id="go">Get pairing code</button>
+    </div>
+    <div id="s2" hidden>
+      <div class="code" id="code">…</div>
+      <ol><li>Open WhatsApp → Linked devices</li><li>Link with phone number instead</li><li>Enter the code above</li></ol>
+    </div>
+    <div id="s3" hidden>
+      <p>Done. Copy your SESSION_ID (also sent to your WhatsApp):</p>
+      <textarea id="sid" readonly></textarea>
+      <button id="copy">Copy SESSION_ID</button>
+      <div class="warn">Never share this. Anyone with it controls your WhatsApp.</div>
+    </div>
+    <div class="err" id="err"></div>
+  </div>
+  <footer>Powered by Paxton-Tech</footer>
+</div>
+<script>
+const $=i=>document.getElementById(i);let timer;
+$('go').onclick=async()=>{
+  $('err').textContent='';$('go').disabled=true;
+  try{
+    const r=await fetch('/api/pair',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({number:$('num').value})});
+    const d=await r.json();if(!r.ok)throw new Error(d.error);
+    $('s1').hidden=true;$('s2').hidden=false;poll(d.id);
+  }catch(e){$('err').textContent=e.message;$('go').disabled=false}
+};
+function poll(id){
+  timer=setInterval(async()=>{
+    try{
+      const d=await (await fetch('/api/status/'+id)).json();
+      if(d.code)$('code').textContent=d.code;
+      if(d.status==='done'){clearInterval(timer);$('s2').hidden=true;$('s3').hidden=false;$('sid').value=d.session}
+      if(d.status==='error'||d.status==='expired'){clearInterval(timer);$('err').textContent=d.error||'Expired. Reload and retry.'}
+    }catch{}
+  },2000);
+}
+$('copy').onclick=()=>{$('sid').select();navigator.clipboard?.writeText($('sid').value);$('copy').textContent='Copied ✓'};
+</script>
+</body>
+</html>
